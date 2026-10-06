@@ -104,8 +104,9 @@ export class HighDemandPlatformStack extends cdk.Stack {
       `dnf install -y nginx`,
       `systemctl enable nginx`,
       `systemctl start nginx`,
-      `INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)`,
-      `AZ=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)`,
+      `TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")`,
+      `INSTANCE_ID=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)`,
+      `AZ=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/availability-zone)`,
       `echo "<html><body><h1>High Demand Platform</h1><p>Instance: $INSTANCE_ID</p><p>Availability Zone: $AZ</p></body></html>" > /usr/share/nginx/html/index.html`,
     );
 
